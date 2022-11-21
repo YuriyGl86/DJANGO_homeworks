@@ -15,16 +15,19 @@
                 <p>Дата публикации: {{ book.pub_date|date:"d.m.Y" }}</p>
             </div>
             {% endfor %}
-<!--            <div class="book col-md-4">-->
-<!--                <h2>Сияние</h2>-->
-<!--                <p>Автор: Стивен Кинг</p>-->
-<!--                <p>Дата публикации: 2018-09-10</p>-->
-<!--            </div>-->
-<!--            <div class="book col-md-4">-->
-<!--                <h2>1984</h2>-->
-<!--                <p>Автор: Джордж Оруэл</p>-->
-<!--                <p>Дата публикации: 2015-03-11</p>-->
-<!--            </div>-->
+
+        </div>
+        <div>
+            {% if prev_obj %}
+            <a href="{{ prev_obj.get_absolute_url }}">⟵{{ prev_obj.pub_date|date:"d.m.Y" }} &nbsp;</a>
+            {% endif %}
+            {% if next_obj %}
+            <a href="{{ next_obj.get_absolute_url }}">{{ next_obj.pub_date|date:"d.m.Y" }} -></a>
+            {% endif %}
+
         </div>
     </div>
 {% endblock %}
+
+
+
