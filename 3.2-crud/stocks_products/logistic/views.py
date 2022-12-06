@@ -24,6 +24,18 @@ class ProductViewSet(ModelViewSet):
 
 
 class StockViewSet(ModelViewSet):
-    queryset = Stock.objects.all()
+    # queryset = Stock.objects.all()
     serializer_class = StockSerializer
     # при необходимости добавьте параметры фильтрации
+
+    def get_queryset(self):
+        pk = self.kwargs.get("pk")
+        products = self.request.GET.get('products')
+        if products:
+            qw_set = Stock.objects.filter(positions__product__title__contains=products).distinct()
+            return qw_set
+
+        if not pk:
+            return Stock.objects.all()
+
+        return Stock.objects.filter(pk=pk)
