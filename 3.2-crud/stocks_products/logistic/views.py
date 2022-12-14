@@ -1,14 +1,23 @@
 from django.db.models import Q
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet
 
 from logistic.models import Product, Stock
 from logistic.serializers import ProductSerializer, StockSerializer
 
 
+class ProductStockAPIListPagination(PageNumberPagination):
+    page_size = 3
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+
+
+
 class ProductViewSet(ModelViewSet):
     # queryset = Product.objects.all()
     serializer_class = ProductSerializer
     # при необходимости добавьте параметры фильтрации
+    pagination_class = ProductStockAPIListPagination
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
@@ -27,6 +36,7 @@ class StockViewSet(ModelViewSet):
     # queryset = Stock.objects.all()
     serializer_class = StockSerializer
     # при необходимости добавьте параметры фильтрации
+    pagination_class = ProductStockAPIListPagination
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
