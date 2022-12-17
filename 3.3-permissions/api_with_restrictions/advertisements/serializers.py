@@ -48,3 +48,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
             return data
         else:
             raise ValidationError('Превышено максимальное число активных объявлений')
+
+
+
+
