@@ -41,13 +41,36 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
         creator = self.context['request'].user
-        adv_count = User.objects.get(username=creator).advertisement_set.filter(status='OPEN').count()
-        # adv_count = Advertisement.objects.filter(creator__username=creator, status='OPEN').count()
-        print(adv_count)
-        if adv_count < 15:
+        open_advertisements_count = creator.advertisement_set.filter(status='OPEN').count()
+
+        new_open_advertisement = False
+
+        if self.context["request"].method in ['PATCH']:
+            new_status = data.get('status')
+            advertisement_pk = self.context['view'].kwargs['pk']
+            old_status = Advertisement.objects.get(pk=advertisement_pk).status
+            if new_status == 'OPEN' and old_status != 'OPEN':
+                new_open_advertisement = True
+
+        elif self.context["request"].method in ['POST']:
+            new_advertisement_status = data.get('status', 'OPEN')
+            if new_advertisement_status == 'OPEN':
+                new_open_advertisement = True
+
+        print('число открытых: ', open_advertisements_count)
+        print('метод', self.context["request"].method)
+        print('открытие нового объявления: ', new_open_advertisement)
+
+        if not new_open_advertisement or new_open_advertisement and open_advertisements_count < 10:
             return data
         else:
             raise ValidationError('Превышено максимальное число активных объявлений')
+
+
+
+
+
+
 
 
 

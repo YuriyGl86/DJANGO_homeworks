@@ -39,3 +39,13 @@ class StockSerializer(serializers.ModelSerializer):
         for prod in positions:
             StockProduct.objects.update_or_create(stock=instance, product=prod.pop('product'), defaults=prod)
         return stock
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
+    'SEARCH_PARAM': 'q',
+    'ORDERING_PARAM': 'o',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 3
+}

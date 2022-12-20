@@ -16,7 +16,6 @@ class AdvertisementViewSet(ModelViewSet):
 
     filter_backends = [DjangoFilterBackend, ]
     filterset_class = AdvertisementFilter
-    # queryset = Advertisement.objects.exclude(Q(status='DRAFT') & ~Q(creator=self.request.user))
     serializer_class = AdvertisementSerializer
 
     def get_permissions(self):
@@ -30,11 +29,11 @@ class AdvertisementViewSet(ModelViewSet):
     @action(methods=['post', 'get'], detail=True)
     def favorites(self, request, pk=None):
         if self.request.method == "GET":
-            favorite_list = Advertisement.objects.filter(favorites__username=request.user)
-            print(self.request.method)
+            print(request.user)
+            # favorite_list = Advertisement.objects.filter(favorites__username=request.user)
+            favorite_list = Advertisement.objects.filter(favorites=request.user)
             return Response({'favorites': [c.id for c in favorite_list]})
-        # print('юзер', request.user)
-        # print(Advertisement.objects.get(pk=pk).creator)
+
         elif request.user.id != Advertisement.objects.get(pk=pk).creator.id:
             request.user.advertisements.add(Advertisement.objects.get(pk=pk))
             return Response({'Favorites': 'success'})
@@ -42,5 +41,5 @@ class AdvertisementViewSet(ModelViewSet):
             return Response({'Favorites: Failed. Вы не можете добавить в избранное свое же объявление'})
 
     def get_queryset(self):
-        queryset = Advertisement.objects.exclude(Q(status='DRAFT') & ~Q(creator=self.request.user))
+        queryset = Advertisement.objects.exclude(Q(status='DRAFT') & ~Q(creator=self.request.user.id))
         return queryset
