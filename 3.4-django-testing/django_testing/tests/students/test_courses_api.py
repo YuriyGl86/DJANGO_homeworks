@@ -120,3 +120,31 @@ def test_delete_course(client, course_factory):
 
         assert response.status_code == 204
         assert Course.objects.filter(pk=course.id).exists() == False
+
+
+@pytest.mark.django_db
+def test_create_max_student_course(client, student_factory, settings):
+    settings.MAX_STUDENTS_PER_COURSE = 1
+    count = Course.objects.count()
+    students = student_factory(_quantity=1)
+    students_id = [x.id for x in students]
+
+    url = reverse('courses-list')
+    response = client.post(url, data={'name': 'test_course', 'students': students_id})
+
+    assert response.status_code == 201
+    assert Course.objects.count() == count + 1
+
+
+@pytest.mark.django_db
+def test_create_max_student_course_exceeding_limit(client, student_factory, settings):
+    settings.MAX_STUDENTS_PER_COURSE = 1
+    count = Course.objects.count()
+    students = student_factory(_quantity=2)
+    students_id = [x.id for x in students]
+
+    url = reverse('courses-list')
+    response = client.post(url, data={'name': 'test_course', 'students': students_id})
+
+    assert response.status_code == 400
+    assert Course.objects.count() == count
